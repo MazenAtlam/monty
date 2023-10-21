@@ -13,9 +13,10 @@ int main(int argc, char *argv[])
 {	stack_t *stack = NULL;
 	instruction_t instruction[] = { {"push", push},  {"pall", pall},
 		{"pint", pint}, {"pop", pop}, {"swap", swap}, {"add", add},
-		{"nop", nop}, {NULL, NULL} };
+		{"#", nop}, {"nop", nop}, {NULL, NULL} };
 	FILE *stream;
 	char *buff = NULL;
+	size_t n = 0;
 	int i, line_num = 0, executed = 0;
 
 	if (argc != ARGSNUM)
@@ -28,17 +29,16 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 	while (1)
-	{	fflush(stdin);
-		line_num++;
-		if (fscanf(stream, "%s", buff) == EOF)
+	{	line_num++;
+		if (getline(&buff, &n, stream) == -1)
 			break;
-		buff[_strlen(buff) - 1] = '\0';
-		cmd[0] = _strtok(buff, " ");
+		buff[strlen(buff) - 1] = '\0';
+		cmd[0] = strtok(buff, " ");
 		if (cmd[0] != NULL)
-		{	cmd[1] = _strtok(NULL, " ");
+		{	cmd[1] = strtok(NULL, " ");
 			for (i = 0; instruction[i].opcode != NULL; i++)
 			{
-				if (_strcmp(cmd[0], instruction[i].opcode) == 0)
+				if (strcmp(cmd[0], instruction[i].opcode) == 0)
 				{	instruction[i].f(&stack, line_num);
 					executed = 1;
 			}	}
